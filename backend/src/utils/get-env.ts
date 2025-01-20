@@ -1,0 +1,17 @@
+import dotenv from "dotenv";
+dotenv.config();
+
+export const getEnv = (key: string, defaultValue: string = ""): string => {
+  const value = process.env[key];
+
+  if (!value) {
+    if (defaultValue) {
+      return defaultValue;
+    }
+    throw new Error(
+      `Environment variable "${key}" is not set or is empty, and no default value was provided.`
+    );
+  }
+
+  return value;
+};
