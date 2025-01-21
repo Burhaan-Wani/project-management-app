@@ -15,40 +15,45 @@ interface UserDocument extends Document {
   omitPassword(): Omit<UserDocument, "password">;
 }
 
-const userSchema = new mongoose.Schema<UserDocument>({
-  name: {
-    type: String,
-    required: true,
-    trim: true,
+const userSchema = new mongoose.Schema<UserDocument>(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      trim: true,
+      unique: true,
+      lowercase: true,
+    },
+    password: {
+      type: String,
+      select: true,
+    },
+    profilePicture: {
+      type: String,
+      default: null,
+    },
+    currentWorkSpace: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Workspace",
+    },
+    lastLogin: {
+      type: Date,
+      default: null,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
   },
-  email: {
-    type: String,
-    required: true,
-    trim: true,
-    unique: true,
-    lowercase: true,
-  },
-  password: {
-    type: String,
-    select: true,
-  },
-  profilePicture: {
-    type: String,
-    default: null,
-  },
-  currentWorkSpace: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Workspace",
-  },
-  lastLogin: {
-    type: Date,
-    default: null,
-  },
-  isActive: {
-    type: Boolean,
-    default: true,
-  },
-});
+  {
+    timestamps: true,
+  }
+);
 
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
