@@ -8,9 +8,9 @@ import { errorHandler } from "./middlewares/error.middleware";
 const app = express();
 const BASE_PATH = config.BASE_PATH;
 
+// Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 app.use(
   session({
     name: "session",
@@ -27,11 +27,11 @@ app.use(
     credentials: true,
   })
 );
+
+// Error handling middleware
 app.use(errorHandler);
 
 app.listen(config.PORT, async () => {
   console.log(`server listening on port ${config.PORT} in ${config.NODE_ENV}`);
   await connectDatabase();
 });
-
-// https://github.com/Burhaan-Wani/project-management-app.git
