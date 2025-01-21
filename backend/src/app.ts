@@ -3,8 +3,10 @@ import cors from "cors";
 import session from "cookie-session";
 import { config } from "./config/app.config";
 import connectDatabase from "./config/db.config";
+import { errorHandler } from "./middlewares/error.middleware";
 
 const app = express();
+const BASE_PATH = config.BASE_PATH;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -25,8 +27,8 @@ app.use(
     credentials: true,
   })
 );
+app.use(errorHandler);
 
-const BASE_PATH = config.BASE_PATH;
 app.listen(config.PORT, async () => {
   console.log(`server listening on port ${config.PORT} in ${config.NODE_ENV}`);
   await connectDatabase();
