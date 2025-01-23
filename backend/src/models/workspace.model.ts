@@ -1,4 +1,4 @@
-import mongoose, { Document, mongo } from "mongoose";
+import mongoose, { Document } from "mongoose";
 import { generateInviteCode } from "../utils/uuid";
 
 export interface WorkspaceDocument extends Document {
@@ -8,6 +8,7 @@ export interface WorkspaceDocument extends Document {
   inviteCode: string;
   createdAt: Date;
   updatedAt: Date;
+  resetInviteCode: () => void;
 }
 
 const workspaceSchema = new mongoose.Schema<WorkspaceDocument>(
