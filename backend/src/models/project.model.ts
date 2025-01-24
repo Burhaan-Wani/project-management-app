@@ -1,8 +1,8 @@
-import mongoose, { Document } from "mongoose";
+import mongoose, { Document, Schema } from "mongoose";
 
 export interface ProjectDocument extends Document {
   name: string;
-  description: string | null;
+  description: string | null; // Optional description for the project
   emoji: string;
   workspace: mongoose.Schema.Types.ObjectId;
   createdBy: mongoose.Schema.Types.ObjectId;
@@ -10,30 +10,27 @@ export interface ProjectDocument extends Document {
   updatedAt: Date;
 }
 
-const projectSchema = new mongoose.Schema<ProjectDocument>(
+const projectSchema = new Schema<ProjectDocument>(
   {
     name: {
       type: String,
-      trim: true,
       required: true,
-    },
-    description: {
-      type: String,
-      required: false,
+      trim: true,
     },
     emoji: {
       type: String,
-      required: true,
+      required: false,
       trim: true,
       default: "📊",
     },
+    description: { type: String, required: false },
     workspace: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "Workspace",
       required: true,
     },
     createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
@@ -44,5 +41,4 @@ const projectSchema = new mongoose.Schema<ProjectDocument>(
 );
 
 const ProjectModel = mongoose.model<ProjectDocument>("Project", projectSchema);
-
 export default ProjectModel;

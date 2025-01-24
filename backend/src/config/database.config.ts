@@ -3,10 +3,11 @@ import { config } from "./app.config";
 
 const connectDatabase = async () => {
   try {
+    console.log(config.MONGO_URI);
     await mongoose.connect(config.MONGO_URI);
-    console.log("Connected to mongoDB database");
+    console.log("Connected to Mongo database");
   } catch (error) {
-    console.log("Error while connecting to mongoDB database");
+    console.log("Error connecting to Mongo database");
     process.exit(1);
   }
 };

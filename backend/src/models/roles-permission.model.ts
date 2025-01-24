@@ -4,8 +4,8 @@ import {
   PermissionType,
   Roles,
   RoleType,
-} from "../enums/rolesEnum";
-import { RolePermissions } from "../utils/rolePermission";
+} from "../enums/role.enum";
+import { RolePermissions } from "../utils/role-permission";
 
 export interface RoleDocument extends Document {
   name: RoleType;

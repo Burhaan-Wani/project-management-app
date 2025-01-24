@@ -1,5 +1,5 @@
-import mongoose, { Document } from "mongoose";
-import { RoleDocument } from "./rolesPermission.model";
+import mongoose, { Document, Schema } from "mongoose";
+import { RoleDocument } from "./roles-permission.model";
 
 export interface MemberDocument extends Document {
   userId: mongoose.Schema.Types.ObjectId;
@@ -8,28 +8,32 @@ export interface MemberDocument extends Document {
   joinedAt: Date;
 }
 
-const memberSchema = new mongoose.Schema<MemberDocument>({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
+const memberSchema = new Schema<MemberDocument>(
+  {
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    workspaceId: {
+      type: Schema.Types.ObjectId,
+      ref: "Workspace",
+      required: true,
+    },
+    role: {
+      type: Schema.Types.ObjectId,
+      ref: "Role",
+      required: true,
+    },
+    joinedAt: {
+      type: Date,
+      default: Date.now,
+    },
   },
-  workspaceId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Workspace",
-    required: true,
-  },
-  role: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Role",
-    required: true,
-  },
-  joinedAt: {
-    type: Date,
-    default: Date.now(),
-  },
-});
+  {
+    timestamps: true,
+  }
+);
 
 const MemberModel = mongoose.model<MemberDocument>("Member", memberSchema);
-
 export default MemberModel;

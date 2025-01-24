@@ -1,16 +1,16 @@
 import mongoose, { Document } from "mongoose";
 import bcrypt from "bcrypt";
 
-interface UserDocument extends Document {
+export interface UserDocument extends Document {
   name: string;
   email: string;
-  password?: string; //password is optional because we can also sigin using google or facebook
+  password?: string;
   profilePicture: string | null;
   isActive: boolean;
   lastLogin: Date | null;
   createdAt: Date;
   updatedAt: Date;
-  currentWorkSpace: mongoose.Schema.Types.ObjectId | null;
+  currentWorkspace: mongoose.Schema.Types.ObjectId | null;
   comparePassword(value: string): Promise<boolean>;
   omitPassword(): Omit<UserDocument, "password">;
 }
@@ -37,7 +37,7 @@ const userSchema = new mongoose.Schema<UserDocument>(
       type: String,
       default: null,
     },
-    currentWorkSpace: {
+    currentWorkspace: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Workspace",
     },
