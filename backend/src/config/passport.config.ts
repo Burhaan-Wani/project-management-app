@@ -8,6 +8,7 @@ import { NotFoundException } from "../utils/appError";
 import { ProviderEnum } from "../enums/account-provider.enum";
 import {
   loginOrCreateAccountService,
+  verifyUserService,
   // verifyUserService,
 } from "../services/auth.service";
 
@@ -39,6 +40,24 @@ passport.use(
         done(null, user);
       } catch (error) {
         done(error, false);
+      }
+    }
+  )
+);
+
+passport.use(
+  new LocalStrategy(
+    {
+      usernameField: "email",
+      passwordField: "password",
+      session: true,
+    },
+    async (email, password, done) => {
+      try {
+        const user = await verifyUserService({ email, password });
+        done(null, user);
+      } catch (error: any) {
+        done(error, false, { message: "Error while logging in" });
       }
     }
   )

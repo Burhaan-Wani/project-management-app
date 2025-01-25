@@ -12,5 +12,5 @@ export const registerSchema = z.object({
 
 export const loginSchema = z.object({
   email: emailSchema,
-  passwordSchema: passwordSchema,
+  password: passwordSchema,
 });

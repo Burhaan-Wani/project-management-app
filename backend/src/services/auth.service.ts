@@ -10,7 +10,8 @@ import {
   UnauthorizedException,
 } from "../utils/appError";
 import MemberModel from "../models/member.model";
-import { ProviderEnum } from "../enums/account-provider.enum";
+import { ProviderEnum, ProviderEnumType } from "../enums/account-provider.enum";
+import { loginSchema } from "../validation/auth.validation";
 
 // google login service
 export const loginOrCreateAccountService = async (data: {
@@ -87,6 +88,7 @@ export const loginOrCreateAccountService = async (data: {
   }
 };
 
+// register service
 export const registerUserService = async (body: {
   email: string;
   name: string;
@@ -157,4 +159,31 @@ export const registerUserService = async (body: {
   } finally {
     session.endSession();
   }
+};
+
+export const verifyUserService = async ({
+  email,
+  password,
+  provider = ProviderEnum.EMAIL,
+}: {
+  email: string;
+  password: string;
+  provider?: string;
+}) => {
+  const account = await AccountModel.findOne({ provider, providerId: email });
+  if (!account) {
+    throw new NotFoundException("Invalid email or password");
+  }
+
+  const user = await UserModel.findById(account.userId);
+  if (!user) {
+    throw new NotFoundException("User not found for the given account");
+  }
+
+  const isMatch = await user.comparePassword(password);
+  if (!isMatch) {
+    throw new UnauthorizedException("Invalid email or password");
+  }
+
+  return user.omitPassword();
 };
