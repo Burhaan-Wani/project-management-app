@@ -12,6 +12,7 @@ import {
 import MemberModel from "../models/member.model";
 import { ProviderEnum } from "../enums/account-provider.enum";
 
+// google login service
 export const loginOrCreateAccountService = async (data: {
   provider: string;
   displayName: string;
@@ -77,6 +78,78 @@ export const loginOrCreateAccountService = async (data: {
     console.log("End Session...");
 
     return { user };
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    throw error;
+  } finally {
+    session.endSession();
+  }
+};
+
+export const registerUserService = async (body: {
+  email: string;
+  name: string;
+  password: string;
+}) => {
+  const { email, name, password } = body;
+
+  const session = await mongoose.startSession();
+  try {
+    session.startTransaction();
+    const existingUser = await UserModel.findOne({ email }).session(session);
+    if (existingUser) {
+      throw new BadRequestException("Email already exists");
+    }
+
+    const user = new UserModel({
+      name,
+      email,
+      password,
+    });
+    await user.save({ session });
+
+    const account = new AccountModel({
+      userId: user._id,
+      provider: ProviderEnum.EMAIL,
+      providerId: email,
+    });
+
+    account.save({ session });
+
+    const workspace = new WorkspaceModel({
+      name: "My workspace",
+      description: `Workspace created for ${user.name}`,
+      owner: user._id,
+    });
+    workspace.save({ session });
+
+    const ownerRole = await RoleModel.findOne({
+      name: Roles.OWNER,
+    }).session(session);
+
+    if (!ownerRole) {
+      throw new NotFoundException("Owner role not found");
+    }
+
+    const member = new MemberModel({
+      userId: user._id,
+      workspaceId: workspace._id,
+      role: ownerRole?._id,
+      joinedAt: new Date(),
+    });
+
+    user.currentWorkspace = workspace._id as mongoose.Schema.Types.ObjectId;
+
+    await member.save({ session });
+    session.commitTransaction();
+    session.endSession();
+    console.log("End Session...");
+
+    return {
+      userId: user._id,
+      workspaceId: workspace._id,
+    };
   } catch (error) {
     await session.abortTransaction();
     session.endSession();
